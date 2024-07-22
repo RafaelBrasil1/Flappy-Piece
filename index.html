@@ -50,6 +50,7 @@
 <script>
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext('2d');
+    let score = 0;
     let anima;
     let velX = 0;
     let velY = 2;
@@ -58,36 +59,70 @@
     let rectW = 120;
     let rectH = 100;
     let Grav = 0.2;
-    let background = new Image();
-    let imagePlayer = new Image();
-    let imageFruit = new Image();
-    let imageBoss = new Image();
-    let imageBoss2 = new Image();
-    let flip = false;
-    let gameover = false;
-    imageFruit.src = "assets/gomu.png";
-    imagePlayer.src = "assets/Flappy.gif";
-    background.src = "assets/background1.png";
-    imageBoss.src = "assets/luffy.png";
-    imageBoss2.src = "assets/ace.png";
-    let FrX = RandomInt(100, 700);
-    let FrY = RandomInt(100, 700);
-    let score = 0;
+    let RoomX = 210;
+    let RoomY = 310;
+    let RoomW = 400;
+    let RoomH = 250;
     let NxtFruit = 0;
     let whichBoss = 1
-    let boss = false;
     let bossX = 900;
     let bossY = 200;
     let bossHeight = 500;
     let bossWidth = 500;
     let bossbar = 600;
     let aceTimer = 300;
-    let attacking = true;
+    let LawballTimer = 60;
+    let imuneCD = 150;
     let luffyataqSpeed = 5;
     let i = 1;
-    let attacklist = [];
+
+
+    let background = new Image();
+    let imagePlayer = new Image();
+    let imageFruit = new Image();
+    let imageBoss = new Image();
+    let imageBoss2 = new Image();
+    let imageBoss3 = new Image();
+    let imgvida1 = new Image();
+    let imgvida2 = new Image();
+    let imgvida3 = new Image();
+    let onepiece = new Image();
+    let imgattacklaw = new Image();
+    let Room = new Image();
+
+    imageFruit.src = "assets/gomu.png";
+    imagePlayer.src = "assets/Flappy.gif";
+    background.src = "assets/background1.png";
+    imageBoss.src = "assets/luffy.png";
+    imageBoss2.src = "assets/ace.png";
+    imageBoss3.src = "assets/law.png";
+    Room.src = "assets/ROOM-transp.png";
+    imgvida1.src = "assets/vidaSim.png";
+    imgvida2.src = "assets/vidaSim.png";
+    imgvida3.src = "assets/vidaSim.png";
+    onepiece.src = "assets/ONEPIECE-close.png";
+    imgattacklaw.src = "assets/attackLaw1.png";
+
+    let imune = false;
+    let flip = false;
+    let gameover = false;
+    let boss = false;
+    let attacking = true;
+    let prize = false;
+    let vida1 = true;
+    let vida2 = true;
+    let vida3 = true;
+
+    let FrX = RandomInt(75, 675);
+    let FrY = RandomInt(75, 675);
+    let tpTimer = RandomInt(550, 700);
+    let Aceattacklist = [];
+    let Lawattacklist = [];
     let ata2 = ''
     let ataq1 = ''
+
+
+
     const Shoot = {
         direction: 0,
         x: 0,
@@ -115,72 +150,90 @@
 
 
         move: function () {
-            if(whichBoss == 1){
-            if ((this.x >= 680 - 170 && this.y >= 290 - 170 && this.y <= 610 - 60) == false || bossX > 500) {
-                this.x += this.direction;
-                if (this.x - 200 >= canvas.width || this.x + 200 < 0) {
+            if (whichBoss == 1) {
+                if ((this.x >= 680 - 170 && this.y >= 290 - 170 && this.y <= 610 - 60) == false || bossX > 500) {
+                    this.x += this.direction;
+                    if (this.x - 200 >= canvas.width || this.x + 200 < 0) {
+
+                        this.y = 1000;
+
+                    }
+                } else {
 
                     this.y = 1000;
 
+
+                    if (bossbar > 0) {
+
+                        bossbar -= 30;
+
+
+                    } else {
+                        bossbar = 0;
+                    }
+
+
+
                 }
-            } else {
-
-                this.y = 1000;
+            }
 
 
-                if (bossbar > 0) {
+            if (whichBoss == 2) {
 
-                bossbar -= 30;
-                    
+                if ((this.x + 40 + 100 > 580 && this.y + 72 + 62 > 235 && this.y + 72 < 235 + 170) == false && (this.x + 40 + 100 > 650 && this.y + 72 < 405 + 150 && this.y + 72 + 62 > 405) == false && (this.x + 40 + 100 > 600 && this.x + 40 < 600 + 120 && this.y + 72 < 570 + 100 && this.y + 72 + 62 > 570) == false || bossX > 500) {
+                    this.x += this.direction;
+                    if (this.x - 200 >= canvas.width || this.x + 200 < 0) {
 
+                        this.y = 1000;
+
+                    }
                 } else {
-                    bossbar = 0;
+
+                    this.y = 1000;
+
+
+                    if (bossbar > 0) {
+
+                        bossbar -= 25;
+
+
+                    } else {
+                        bossbar = 0;
+                    }
                 }
 
 
 
             }
-        }
-        
 
-        if(whichBoss == 2){
-    // ctx.beginPath();
-    // ctx.rect(this.x+40,this.y+72,100,62);
-    // ctx.rect(580,235,220,170);
-    // ctx.rect(650,405,150,150);
-    // ctx.rect(600,570,120,100);
-    // ctx.stroke();
+            if (whichBoss == 3) {
 
-        //
+                if ((this.x + 40 + 100 > 655 && this.y + 72 + 62 > 245 && this.y + 72 < 245 + 440) == false && (this.x + 40 + 100 > 520 && this.x + 40 < 520 + 60 && this.y + 72 < 470 + 50 && this.y + 72 + 62 > 470) == false && (this.x + 40 + 100 > 575 && this.x + 40 < 575 + 50 && this.y + 72 < 440 + 40 && this.y + 72 + 62 > 440) == false || bossX > 500) {
+                    this.x += this.direction;
+                    if (this.x - 200 >= canvas.width || this.x + 200 < 0) {
 
+                        this.y = 1000;
 
-        
-        
-        if ((this.x+40 + 100 > 580 && this.y+72 + 62 > 235 && this.y+72 < 235 + 170) == false && (this.x+40 + 100 > 650 && this.y+72 < 405 + 150 && this.y+72 + 62 > 405) == false && (this.x+40 + 100 > 600 && this.x+40 < 600 + 120 && this.y+72 < 570 + 100 && this.y+72 + 62 > 570) == false || bossX > 500) {
-                this.x += this.direction;
-                if (this.x - 200 >= canvas.width || this.x + 200 < 0) {
+                    }
+                } else {
 
                     this.y = 1000;
 
+
+                    if (bossbar > 0) {
+
+                        bossbar -= 20;
+
+
+                    } else {
+                        bossbar = 0;
+                    }
                 }
-            } else {
 
-                this.y = 1000;
-
-
-                if (bossbar > 0) {
-
-                bossbar -= 25;
-                    
-
-                } else {
-                    bossbar = 0;
-                }
-        }
+            }
 
         }
     }
-}
 
 
 
@@ -222,11 +275,15 @@
             if (x + rectW <= this.x + this.largura && x + rectW - 75 >= this.x) {
                 if (this.sentido == 1) {
                     if (y + rectH > 800 - (this.altura * -1)) {
-                        gameover = true;
+                        if (imune == false) {
+                            gameover = true
+                        };
                     }
                 } else if (this.sentido == -1) {
                     if (y + rectH - 30 < (this.altura)) {
-                        gameover = true;
+                        if (imune == false) {
+                            gameover = true
+                        };
                     }
                 }
 
@@ -324,7 +381,9 @@
                 // ctx.stroke();
 
                 if (x + 30 < this.x + 35 + 140 && x + 30 + 60 > this.x + 35 && y + 25 < this.y + 25 + 25 && y + 25 + 51 > this.y + 25) {
-                    gameover = true;
+                    if (imune == false) {
+                        gameover = true;
+                    };
                 }
 
 
@@ -338,11 +397,15 @@
 
                 if (this.sentido == "+") {
                     if (x + 30 < this.x + 35 + 26 && x + 30 + 60 > this.x + 35 && y + 25 < this.y + 23 + 120 && y + 25 + 51 > this.y + 23) {
-                        gameover = true;
+                        if (imune == false) {
+                            gameover = true;
+                        };
                     }
                 } else if (this.sentido == "-") {
                     if (x + 30 < this.x + 35 + 26 && x + 30 + 60 > this.x + 35 && y + 25 < this.y + 55 + 120 && y + 25 + 51 > this.y + 55) {
-                        gameover = true;
+                        if (imune == false) {
+                            gameover = true;
+                        };
                     }
 
                 }
@@ -350,6 +413,85 @@
             }
 
         }
+    }
+
+    class LawAttack {
+        constructor() {
+            this.image = new Image();
+            this.image.src = "assets/attackLaw1.png";
+            this.x = 0;
+            this.y = 0;
+            this.radius = 0;
+            this.exploded = false;
+            this.explodeTimer = 70;
+            this.distance = 0;
+            this.dx = 0
+            this.dy = 0
+            this.canColide = false;
+
+
+
+
+        }
+
+        explode() {
+            if (this.radius <= RandomInt(250, 400) && this.exploded == false) {
+                this.radius += 4;
+                this.x -= 2;
+                this.y -= 2;
+            } else {
+                this.exploded = true;
+                this.image.src = "assets/attackLaw2.png";
+
+                if (this.radius > 0) {
+                    this.radius -= 4;
+                    this.x += 2;
+                    this.y += 2;
+                }
+            }
+        }
+
+
+
+        desenha() {
+            ctx.drawImage(this.image, this.x, this.y, this.radius, this.radius);
+            // ctx.beginPath();
+            // ctx.moveTo(this.x + this.radius/2, this.y + this.radius /2);
+            // ctx.lineTo(this.x + this.radius/2 + this.radius/4, this.y + this.radius /2);
+            // ctx.stroke();
+            if (this.explodeTimer > 0) {
+                this.explodeTimer -= 1
+            } else {
+                this.canColide = true;
+                this.explode();
+            }
+        }
+
+
+
+
+        colide() {
+            // ctx.beginPath();
+            // ctx.moveTo(this.x + this.radius/2, this.y + this.radius /2);
+            // ctx.lineTo((this.x+this.radius /2) + 50,y+50);
+            // ctx.stroke();
+            this.dx = ((x + 60) - (this.x + this.radius / 2));
+            this.dy = ((y + 50) - (this.y + this.radius / 2));
+            this.distance = Math.sqrt(this.dx * this.dx + this.dy * this.dy);
+
+            if (this.radius > 0) {
+
+                if (this.distance <= (this.radius / 4 + 35)) {
+                    if (this.canColide == true) {
+                        if (imune == false) {
+                            gameover = true;
+                        }
+                    }
+                }
+
+            }
+        }
+
     }
 
 
@@ -367,7 +509,7 @@
 
 
     function draw() {
-        
+
 
         //background
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -376,9 +518,9 @@
 
 
         //draw fruit
-        if (boss == false) {
-            ctx.drawImage(imageFruit, FrX, FrY, 100, 100);
 
+        if (boss == false && prize == false) {
+            ctx.drawImage(imageFruit, FrX, FrY, 100, 100);
 
             // fruit colider
             if (x + (rectW - 50) > FrX && x < FrX + 50 && y + (rectH - 50) > FrY && y < FrY + 50) {
@@ -423,6 +565,12 @@
 
 
 
+        //Life
+        ctx.drawImage(imgvida1, 20, 50, 40, 40);
+        ctx.drawImage(imgvida2, 60, 50, 40, 40);
+        ctx.drawImage(imgvida3, 100, 50, 40, 40);
+
+
         //boss 1
 
         if (score == 5) {
@@ -438,7 +586,7 @@
 
 
             if (bossX > 500) {
-                bossX-= 3;
+                bossX -= 3;
                 whichBoss = 1;
             }
 
@@ -543,7 +691,7 @@
 
         }
 
-                //Boss 2
+        //Boss 2
 
         if (score == 10) {
 
@@ -552,13 +700,13 @@
             ctx.drawImage(imageBoss2, -bossX - bossWidth, bossY, bossWidth, bossHeight);
             ctx.restore();
 
-            if(boss == false){
-            bossbar = 600;
-            bossY = 200;
+            if (boss == false) {
+                bossbar = 600;
+                bossY = 200;
             }
 
             boss = true;
-            
+
 
             //boss move
 
@@ -603,33 +751,33 @@
                     if (aceTimer > 300) {
 
                         if (i != 10) {
-                            attacklist[i] = new AceShoot;
-                            attacklist[i].x = RandomInt(50, 700);
-                            attacklist[i].y = RandomInt(50, 700);
+                            Aceattacklist[i] = new AceShoot;
+                            Aceattacklist[i].x = RandomInt(50, 700);
+                            Aceattacklist[i].y = RandomInt(50, 700);
 
                             rand = RandomInt(1, 4);
 
                             if (rand == 1) {
-                                attacklist[i].direction = "V";
-                                attacklist[i].sentido = "+";
-                                attacklist[i].y = 850;
+                                Aceattacklist[i].direction = "V";
+                                Aceattacklist[i].sentido = "+";
+                                Aceattacklist[i].y = 850;
                             }
                             else if (rand == 2) {
-                                attacklist[i].direction = "V";
-                                attacklist[i].sentido = "-";
-                                attacklist[i].y = -200;
+                                Aceattacklist[i].direction = "V";
+                                Aceattacklist[i].sentido = "-";
+                                Aceattacklist[i].y = -200;
                             }
 
                             else if (rand == 3) {
-                                attacklist[i].direction = "H";
-                                attacklist[i].sentido = "+";
-                                attacklist[i].x = -150;
+                                Aceattacklist[i].direction = "H";
+                                Aceattacklist[i].sentido = "+";
+                                Aceattacklist[i].x = -150;
                             }
 
                             else if (rand == 4) {
-                                attacklist[i].direction = "H";
-                                attacklist[i].sentido = "-";
-                                attacklist[i].x = 850;
+                                Aceattacklist[i].direction = "H";
+                                Aceattacklist[i].sentido = "-";
+                                Aceattacklist[i].x = 850;
                             }
 
 
@@ -652,10 +800,10 @@
                     }
 
 
-                    for (z = 1; z < attacklist.length; z++) {
-                        attacklist[z].desenha();
-                        attacklist[z].move();
-                        attacklist[z].colide();
+                    for (z = 1; z < Aceattacklist.length; z++) {
+                        Aceattacklist[z].desenha();
+                        Aceattacklist[z].move();
+                        Aceattacklist[z].colide();
                     }
 
                 }
@@ -663,11 +811,158 @@
 
             }
 
+            //Boss death
+
 
             if (bossbar <= 0) {
                 imageBoss2.src = "assets/ace-death.png";
                 if (bossY <= 800) {
                     bossY += 10;
+                }
+                else {
+                    bossX += 500;
+                    score += 1;
+                    i = 0;
+                    boss = false;
+
+                }
+
+
+            }
+
+
+        }
+
+        // Boss 3
+
+        if (score == 15) {
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(imageBoss3, -bossX - bossWidth, bossY, bossWidth, bossHeight);
+            ctx.restore();
+
+            if (boss == false) {
+                bossbar = 600;
+                bossY = 200;
+            }
+
+            boss = true;
+
+
+            //boss move
+
+
+            if (bossX > 500) {
+                bossX -= 3;
+                whichBoss = 3;
+            }
+
+            //Boss text
+
+            if (boss == true) {
+                ctx.font = "70px VCR";
+                ctx.fillText("LAW", 350, 80);
+
+
+                // Boss Bar
+
+                ctx.fillStyle = 'black';
+                ctx.fillRect(110, 110, 600, 40);
+
+                ctx.fillStyle = 'green';
+                ctx.fillRect(110, 110, bossbar, 40);
+
+
+                ctx.fillStyle = 'black';
+
+                //Boss Attack
+
+
+
+                if (bossX > 500) {
+
+                }
+
+                if (bossX <= 500) {
+
+
+
+
+
+
+                    // TP
+
+                    if (tpTimer > 0) {
+                        tpTimer -= 1;
+                    } else {
+                        verifyX = RandomInt(50, 700);
+                        verifyY = RandomInt(50, 700);
+
+                        if (verifyX + 30 + 60 > 500 && verifyY + 25 + 51 > 230 && verifyY + 25 < 230 + 470) {
+                            verifyX = RandomInt(50, 700);
+                            verifyY = RandomInt(50, 700);
+                        } else {
+                            x = verifyX;
+                            y = verifyY;
+                            tpTimer = RandomInt(250, 700);
+                        }
+
+
+                    }
+
+                    // Law Ball
+
+                    if (LawballTimer > 0) {
+                        LawballTimer -= 1;
+                    } else {
+                        Lawattacklist[i] = new LawAttack();
+                        Lawattacklist[i].x = RandomInt(75, 675);
+                        Lawattacklist[i].y = RandomInt(75, 675);
+                        Lawattacklist[i].radius = 100;
+                        i += 1;
+                        LawballTimer = 60;
+                    }
+
+
+
+
+                    for (z = 1; z < Lawattacklist.length; z++) {
+                        Lawattacklist[z].desenha();
+                        Lawattacklist[z].colide();
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                }
+
+
+            }
+
+
+            // boss death
+
+            if (bossbar <= 0) {
+                if (bossY <= 1000) {
+                    bossY += 10;
+                    if (RoomH >= 0) {
+                        RoomH -= 16 * 12;
+                        RoomW = Math.round(RoomH * 1.6);
+                        RoomX += 12.8 * 12;
+                        RoomY += 8.4 * 12;
+                    }
+
                 }
                 else {
                     bossX += 500;
@@ -680,6 +975,30 @@
             }
 
 
+
+
+        }
+
+        //Win
+
+        if (score == 20) {
+            x = 344;
+            ctx.drawImage(onepiece, 300, 100, 200, 100);
+            if (prize == false) {
+                Grav = 0;
+                y = 450;
+            }
+            if (y > 150) {
+                velY = 0;
+                prize = true;
+                y--;
+            } else {
+                if (y <= 150) {
+                    onepiece.src = "assets/ONEPIECE-open.png";
+                    ctx.font = "100px VCR";
+                    ctx.fillText("YOU WIN!!", (canvas.width / 2) - 250, (canvas.height / 2) + 20);
+                }
+            }
         }
 
 
@@ -702,6 +1021,24 @@
 
 
 
+        // Room
+        if (score == 15) {
+            if (bossX <= 500) {
+                ctx.drawImage(Room, RoomX, RoomY, RoomW, RoomH);
+                if (RoomW < 13000) {
+                    RoomH += 16 * 4
+                    RoomW = Math.round(RoomH * 1.6);
+                    RoomX -= 12.8 * 4
+                    RoomY -= 8.4 * 4
+
+                }
+
+
+            }
+        }
+
+
+
 
 
         // colider player
@@ -711,13 +1048,21 @@
         if (x > canvas.width - (rectW - 30) || x < 0 - 30) {
             velX = 0;
 
-            gameover = true;
+            if (imune == false) {
+                gameover = true
+                x = 300;
+                y = 250;
+            };
         };
 
         if (y > canvas.height - (rectH - 30) || y < 0 - 30) {
             velY = 0;
 
-            gameover = true;
+            if (imune == false) {
+                gameover = true
+                x = 300;
+                y = 250;
+            };
         };
         //boss
 
@@ -726,25 +1071,55 @@
             if (whichBoss == 1) {
                 if (x >= 680 - rectW && y >= 290 - rectW && y <= 610) {
 
-                    gameover = true;
+                    if (imune == false) {
+                        gameover = true
+                    };
                 }
                 if (x >= 630 - rectW && y >= 340 - rectW && y <= 400) {
 
-                    gameover = true;
+                    if (imune == false) {
+                        gameover = true
+                    };
                 }
             }
 
-            if (whichBoss == 2){
-                if(x+30+60 > 580 && y+25 + 51 > 235 && y+25 < 235 + 170){
-                    gameover = true;
+            if (whichBoss == 2) {
+                if (x + 30 + 60 > 580 && y + 25 + 51 > 235 && y + 25 < 235 + 170) {
+                    if (imune == false) {
+                        gameover = true
+                    };
                 }
-                if(x+30+60 > 650 && y+25 < 405 + 150 && y+25 + 51 > 405){
-                    gameover = true;
+                if (x + 30 + 60 > 650 && y + 25 < 405 + 150 && y + 25 + 51 > 405) {
+                    if (imune == false) {
+                        gameover = true
+                    };
 
                 }
 
-                if(x+30+60 > 600 && x+30 < 600 +120 && y+25 < 570 + 100 && y+25 + 51 > 570){
-                    gameover = true;
+                if (x + 30 + 60 > 600 && x + 30 < 600 + 120 && y + 25 < 570 + 100 && y + 25 + 51 > 570) {
+                    if (imune == false) {
+                        gameover = true
+                    };
+                }
+
+            }
+
+
+            if (whichBoss == 3) {
+                if (x + 30 + 60 > 655 && y + 25 < 245 + 440 && y + 25 + 51 > 245) {
+                    if (imune == false) {
+                        gameover = true
+                    };
+                }
+                if (x + 30 + 60 > 520 && x + 30 < 520 + 60 && y + 25 < 470 + 50 && y + 25 + 51 > 470) {
+                    if (imune == false) {
+                        gameover = true
+                    };
+                }
+                if (x + 30 + 60 > 575 && x + 30 < 575 + 50 && y + 25 < 440 + 40 && y + 25 + 51 > 440) {
+                    if (imune == false) {
+                        gameover = true
+                    };
                 }
 
             }
@@ -753,12 +1128,21 @@
 
 
 
-        // ctx.beginPath();
-        
-        // ctx.rect(x+30,y+25,60,51);
-        // ctx.stroke();
-        
 
+
+
+        //imune Remove
+        if (imune == true) {
+            imagePlayer.src = "assets/Flappy-imune.png"
+
+            if (imuneCD > 0) {
+                imuneCD--;
+            } else {
+                imune = false;
+                imagePlayer.src = "assets/Flappy.gif";
+                imuneCD = 150;
+            }
+        }
 
 
 
@@ -770,12 +1154,40 @@
 
         //gameover True
         if (gameover == true) {
-            ctx.font = "100px deadknight";
-            imagePlayer.src = "assets/FlappyDeath.png";
-            ctx.fillText("Game Over!", (canvas.width / 2) - 350, (canvas.height / 2) + 20);
-            Grav = 0;
-            velX = 0;
-            velY = 0;
+            if (vida3 == true) {
+                imgvida3.src = 'assets/vidaNao.png'
+                vida3 = false;
+                gameover = false;
+                imune = true;
+
+
+            } else {
+                if (vida2 == true) {
+                    imgvida2.src = 'assets/vidaNao.png'
+                    vida2 = false;
+                    gameover = false;
+                    imune = true;
+                } else {
+
+                    imgvida1.src = 'assets/vidaNao.png'
+                    vida1 = false;
+                    gameover = true;
+
+                    ctx.font = "100px deadknight";
+                    imagePlayer.src = "assets/FlappyDeath.png";
+                    ctx.fillText("Game Over!", (canvas.width / 2) - 350, (canvas.height / 2) + 20);
+                    boss = false
+                    Grav = 0;
+                    velX = 0;
+                    velY = 0;
+
+
+                }
+            }
+
+
+
+
         }
 
         // vel updt
@@ -789,7 +1201,19 @@
 
 
 
+
         //hitbox 
+
+        //player
+
+        // ctx.beginPath();
+        // ctx.rect(x+30,y+25,60,51);
+        // ctx.stroke();
+
+        //Shoot
+        // ctx.beginPath();
+        // ctx.rect(this.x+40,this.y+72,100,62);
+        // ctx.stroke();
 
         //boss 1
 
@@ -798,6 +1222,27 @@
         // ctx.rect(610,340, 60,60)
         // ctx.rect(610,580, 95,45)
         // ctx.stroke();
+
+        //boss 2
+
+        // ctx.beginPath();
+        // ctx.rect(580,235,220,170);
+        // ctx.rect(650,405,150,150);
+        // ctx.rect(600,570,120,100);
+        // ctx.stroke();
+
+
+        // boss 3
+
+        // ctx.beginPath();
+        // ctx.rect(655,245,155,440);
+        // ctx.rect(520,470,60,50);
+        // ctx.rect(575,440,50,40);
+        // ctx.stroke();
+
+
+
+
 
 
 
